@@ -116,6 +116,7 @@ The database is automatically initialized with the schema from sql/init.sql. Thi
 - Games tracking
 - Player statistics per game
 - Aggregated season statistics views
+- Some data to begin with
 
 ## Performance Considerations
 

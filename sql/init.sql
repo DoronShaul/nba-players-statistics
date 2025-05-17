@@ -139,3 +139,92 @@ JOIN
     seasons s ON g.season_id = s.season_id AND pt.season_id = s.season_id
 GROUP BY
     t.team_id, t.team_name, s.season_id, s.season_name;
+
+
+-- Insert sample seasons
+INSERT INTO seasons (season_name, start_date, end_date) VALUES
+('2023-24', '2023-10-24', '2024-06-15'),
+('2022-23', '2022-10-18', '2023-06-12');
+
+-- Insert sample teams
+INSERT INTO teams (team_name, team_abbreviation, team_conference) VALUES
+('Los Angeles Lakers', 'LAL', 'WEST'),
+('Boston Celtics', 'BOS', 'EAST'),
+('Golden State Warriors', 'GSW', 'WEST'),
+('Miami Heat', 'MIA', 'EAST'),
+('Denver Nuggets', 'DEN', 'WEST'),
+('Milwaukee Bucks', 'MIL', 'EAST');
+
+-- Insert sample players
+INSERT INTO players (player_first_name, player_last_name, player_jersey_number, player_position) VALUES
+('LeBron', 'James', 23, 'SF'),
+('Anthony', 'Davis', 3, 'PF'),
+('Jayson', 'Tatum', 0, 'SF'),
+('Jaylen', 'Brown', 7, 'SG'),
+('Stephen', 'Curry', 30, 'PG'),
+('Klay', 'Thompson', 11, 'SG'),
+('Jimmy', 'Butler', 22, 'SF'),
+('Bam', 'Adebayo', 13, 'C'),
+('Nikola', 'Jokic', 15, 'C'),
+('Jamal', 'Murray', 27, 'PG'),
+('Giannis', 'Antetokounmpo', 34, 'PF'),
+('Khris', 'Middleton', 22, 'SF');
+
+-- Associate players with teams for the 2023-24 season
+INSERT INTO player_teams (player_id, team_id, season_id, join_date) VALUES
+-- Lakers players
+(1, 1, 1, '2023-10-01'), -- LeBron - Lakers
+(2, 1, 1, '2023-10-01'), -- Davis - Lakers
+-- Celtics players
+(3, 2, 1, '2023-10-01'), -- Tatum - Celtics
+(4, 2, 1, '2023-10-01'), -- Brown - Celtics
+-- Warriors players
+(5, 3, 1, '2023-10-01'), -- Curry - Warriors
+(6, 3, 1, '2023-10-01'), -- Thompson - Warriors
+-- Heat players
+(7, 4, 1, '2023-10-01'), -- Butler - Heat
+(8, 4, 1, '2023-10-01'), -- Adebayo - Heat
+-- Nuggets players
+(9, 5, 1, '2023-10-01'), -- Jokic - Nuggets
+(10, 5, 1, '2023-10-01'), -- Murray - Nuggets
+-- Bucks players
+(11, 6, 1, '2023-10-01'), -- Giannis - Bucks
+(12, 6, 1, '2023-10-01'); -- Middleton - Bucks
+
+-- Associate players with teams for the 2022-23 season
+INSERT INTO player_teams (player_id, team_id, season_id, join_date, leave_date) VALUES
+-- Same team associations for previous season
+(1, 1, 2, '2022-10-01', '2023-06-30'),
+(2, 1, 2, '2022-10-01', '2023-06-30'),
+(3, 2, 2, '2022-10-01', '2023-06-30'),
+(4, 2, 2, '2022-10-01', '2023-06-30'),
+(5, 3, 2, '2022-10-01', '2023-06-30'),
+(6, 3, 2, '2022-10-01', '2023-06-30'),
+(7, 4, 2, '2022-10-01', '2023-06-30'),
+(8, 4, 2, '2022-10-01', '2023-06-30'),
+(9, 5, 2, '2022-10-01', '2023-06-30'),
+(10, 5, 2, '2022-10-01', '2023-06-30'),
+(11, 6, 2, '2022-10-01', '2023-06-30'),
+(12, 6, 2, '2022-10-01', '2023-06-30');
+
+-- Insert sample games for the 2023-24 season
+INSERT INTO games (game_date, home_team_id, away_team_id, season_id, game_is_playoff) VALUES
+-- Regular season games
+('2023-11-15', 1, 2, 1, FALSE), -- Lakers vs Celtics
+('2023-11-22', 3, 1, 1, FALSE), -- Warriors vs Lakers
+('2023-12-05', 2, 4, 1, FALSE), -- Celtics vs Heat
+('2023-12-12', 5, 6, 1, FALSE), -- Nuggets vs Bucks
+('2023-12-25', 1, 3, 1, FALSE), -- Lakers vs Warriors (Christmas game)
+('2024-01-08', 4, 5, 1, FALSE), -- Heat vs Nuggets
+('2024-01-15', 6, 2, 1, FALSE), -- Bucks vs Celtics
+('2024-02-02', 3, 5, 1, FALSE), -- Warriors vs Nuggets
+('2024-02-10', 4, 6, 1, FALSE), -- Heat vs Bucks
+('2024-03-01', 2, 1, 1, FALSE); -- Celtics vs Lakers
+
+-- Insert sample games for the 2022-23 season
+INSERT INTO games (game_date, home_team_id, away_team_id, season_id, game_is_playoff) VALUES
+('2022-11-10', 2, 1, 2, FALSE), -- Celtics vs Lakers
+('2022-12-20', 3, 5, 2, FALSE), -- Warriors vs Nuggets
+('2023-01-05', 6, 4, 2, FALSE), -- Bucks vs Heat
+('2023-02-15', 1, 5, 2, FALSE), -- Lakers vs Nuggets
+('2023-03-10', 4, 3, 2, FALSE); -- Heat vs Warriors
