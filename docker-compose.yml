@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: nba-stats-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: nba_stats
+      MYSQL_USER: nbauser
+      MYSQL_PASSWORD: nbapassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "nbauser", "-pnbapassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nba-network
+
+  redis:
+    image: redis:7.0
+    container_name: nba-stats-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nba-network
+
+  nba-stats-service-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nba-stats-service-1
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/nba_stats?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_REDIS_HOST=redis
+      - SERVER_PORT=8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nba-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  nba-stats-service-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nba-stats-service-2
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/nba_stats?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_REDIS_HOST=redis
+      - SERVER_PORT=8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nba-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  nginx:
+    image: nginx:latest
+    container_name: nba-stats-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - nba-stats-service-1
+      - nba-stats-service-2
+    networks:
+      - nba-network
+
+networks:
+  nba-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
